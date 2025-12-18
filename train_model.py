@@ -1,24 +1,39 @@
-#Melatih otak ai untuk memprediksi gaji karyawan
+# Buat Otak AI nya
+#1. Import Library
 
-# 1. Mengimport library yang dibutuhkan
-import pandas as pd # untuk membaca file csv
-from sklearn.linear_model import LinearRegression # untuk mengambil rumus matematika (model)
-import joblib # untuk membungkus model yang sudah dilatih
+import pandas as pd
+from sklearn.linear_model import LinearRegression
+import joblib
 
-# 2. Membaca data dari file csv
-pd = pd.read_csv("dataset_gaji.csv")
+#2. Load Data V2
+df = pd.read_csv('dataset_gaji_v2.csv')
 
-# 3. Memisahkan mana soal dan mana kunci jawaban
-X = pd[['Tahun_Pengalaman']] # Mengambil kolom pengalaman sebagai input
-y = pd['Gaji'] # Mengambil kolom gaji sebagai target
+#3. Terjemahkan Kata jadi Angka Bahasa(Encoding)
+# Kita bikin kamus: SMA=0. S1=1, S2=2
+kamus_pendidikan = {'SMA': 0, 'S1': 1, 'S2': 2}
 
-# 4. Melatih model menggunakan Linear Regression
-model = LinearRegression() # menyiapkan otak 
-model.fit(X,y) # perintah "BElajar!". disini model mencari pola hubungan antara tahun dan gaji
+# Kita Tempelkan kamus ke kolom Pendidikan 
+df['Pendidikan'] = df['Pendidikan'].map(kamus_pendidikan)
 
-# 5. menyimpan otak pintar ini ke dalam file
-joblib.dump(model, "model_gaji.pkl") # model disimpan dalam file model_gaji.pkl
-print("Model berhasi disimpan!")
+# Cek apakah berhasil (harus muncul angka, bukan tulisan lagi)
+print("Contoh data setelah diterjemahkan:")
+print(df.head())
 
+#3. Tentukan X (Fitur) & y (Target)
+X = df[['Pengalaman', 'Pendidikan']]
+y = df['Gaji']
 
+#4. Latih Model
+model = LinearRegression()
+model.fit(X, y)
 
+#5. Coba Tes Dulu (Prediksi)
+# Misal: Pengalaman 5 Tahun, Lulusan S1 (Angka 1)
+contoh_data = [[5, 1]]
+prediksi = model.predict(contoh_data)
+
+print(f"Tes Prediksi (5 Tahun, S1): Rp {int(prediksi[0])}")
+
+#6. Simpan Model V2
+joblib.dump(model, 'model_gaji_v2.pkl')
+print("✅ Sukses! Model V2 berhasil dilatih dan disimpan!")
